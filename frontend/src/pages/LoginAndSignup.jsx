@@ -1,7 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { AuthContext } from "../context/AuthContext";
+
+import VerifyOTP from "./VerifyOTP";
 
 function LoginAndSignup({ user, setUser }) {
+
   const [ state, setState ] = useState("Login");
   const [ username, setUsername ] = useState("");
   const [ phone, setPhone ] = useState("");
@@ -10,70 +15,21 @@ function LoginAndSignup({ user, setUser }) {
   
   const navigate = useNavigate();
 
-  function capitalizeFirstLetter(str) {
-    if (!str) return ""; 
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
+  const { handleSignup, handleLogin } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const isSignUp = state === "Sign Up";
-      const url = `http://localhost:4000/api/auth/${isSignUp ? "signup" : "login"}`;
 
-      let payload;
-      if (isSignUp) {
-        payload = { username, phone, email, password };
-      } else {
-        payload = { email, password };
-      }
+    let credentials;
 
-      const response = await fetch(url, {
-        method: "POST", 
-        headers: {
-          'Content-Type': 'application/json'
-        }, 
-        body: JSON.stringify(payload)
-      });
-      const data = await response.json();
-      const user = data.user;
-      if (response.ok) {
-        alert(`Authentication successful! ${capitalizeFirstLetter(user.username)}`);
-        localStorage.setItem('accessToken', data.accessToken);
-        setUser(data.accessToken);
-        navigate("/");
-      } else {
-        alert(data.message || "Authentication failed!")
-      }
-    } catch (error) {
-      console.log(error);
+    if (state == 'Sign Up') {
+      credentials = { username, phone, email, password };
+      handleSignup(credentials);
+    } else {
+      credentials = { email, password };
+      handleLogin(credentials);
     }
-  };
-  
-
-  // Handling Sign Up logic  (***STILL WORKING ON IT***)
-  /* const handleSignup = async (e) => {
-    e.preventDefault();
-    try {
-      const signupURL = `http://localhost:4000/api/auth/signup`;
-
-      let payload = { username, phone, email, password };
-
-      const response = await fetch(signupURL, {
-        method: "POST", 
-        headers: {
-          'Content-Type': 'application/json'
-        }, 
-        body: JSON.stringify(payload)
-      });
-      const data = await response.json();
-      if (response.ok) {
-        alert(`OTP Verification pending for user ${payload.username}`);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  } */
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 flex items-center justify-center px-4">
@@ -92,7 +48,7 @@ function LoginAndSignup({ user, setUser }) {
 
         <form onSubmit={handleSubmit} className="space-y-5">
 
-          {state === "Sign Up" && (
+          {state === "Sign Up" &&  (
             <>
               <div>
                 <label className="block mb-1 font-medium text-gray-700">
@@ -182,9 +138,7 @@ function LoginAndSignup({ user, setUser }) {
             </p>
           )}
         </div>
-
       </div>
-
     </div>
   );
 }
