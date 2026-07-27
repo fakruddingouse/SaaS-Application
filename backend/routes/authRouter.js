@@ -1,8 +1,13 @@
 import authController from "../controllers/authControllers.js";
 import express from "express";
+import authMiddleware from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
-router.post("/auth/signup", authController.signup);
-router.post("/auth/login", authController.login);
+router.post("/signup", authController.signup);
+router.post("/verify-otp", authController.verifyOTP);
+router.post("/resend-otp", authController.resendOTP);
+router.post("/login", authController.login);
+router.post("/refresh", authController.refreshAccessToken);
+router.post("/logout", authMiddleware, authController.logout);
 
 export default router;
