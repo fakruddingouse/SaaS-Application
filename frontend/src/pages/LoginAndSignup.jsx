@@ -1,9 +1,6 @@
 import React, { useContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { AuthContext } from "../context/AuthContext";
-
-import VerifyOTP from "./VerifyOTP";
+import { useAuth } from "../hooks/useAuth.js";
 
 function LoginAndSignup({ user, setUser }) {
 
@@ -12,22 +9,24 @@ function LoginAndSignup({ user, setUser }) {
   const [ phone, setPhone ] = useState("");
   const [ email, setEmail ] = useState("");
   const [ password, setPassword ] = useState("");
-  
-  const navigate = useNavigate();
+  const [ loading, setLoading ] = useState(false);
 
-  const { handleSignup, handleLogin } = useContext(AuthContext);
+  const { signup, login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    let credentials;
-
-    if (state == 'Sign Up') {
-      credentials = { username, phone, email, password };
-      handleSignup(credentials);
-    } else {
-      credentials = { email, password };
-      handleLogin(credentials);
+    setLoading(true);
+    try {
+      let credentials;
+      if (state === 'Sign Up') {
+        credentials = { username, phone, email, password };
+        await signup(credentials);
+      } else {
+        credentials = { email, password };
+        await login(credentials);
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -106,9 +105,10 @@ function LoginAndSignup({ user, setUser }) {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 transition-all duration-300 text-white py-3 rounded-lg font-semibold shadow-md"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 transition-all duration-300 text-white py-3 rounded-lg font-semibold shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {state === "Sign Up" ? "Create Account" : "Login"}
+            {loading ? "Please wait..." : state === "Sign Up" ? "Create Account" : "Login"}
           </button>
 
         </form>

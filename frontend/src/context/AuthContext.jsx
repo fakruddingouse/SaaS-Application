@@ -1,101 +1,69 @@
-import React, { createContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { createContext, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
-const backendUrl = "http://localhost:4000/api/auth";
+import api from "../api/axios";
+import { getUser, setUserStorage, getToken, setToken, removeToken } from "../utils/token";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
 
-    const [ user, setUser ] = useState(() => {
-        return localStorage.getItem('accessToken') || null
-    });
-    const [ state, setState ] = useState("Login");
-    const [ username, setUsername ] = useState("");
-    const [ phone, setPhone ] = useState("");
-    const [ email, setEmail ] = useState("");
-    const [ password, setPassword ] = useState("");
-    
     const navigate = useNavigate();
 
-    function capitalizeFirstLetter(str) {
-        if (!str) return ""; 
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
+    const [user, setUser] = useState(getUser());
+    const [email, setEmail] = useState("");
 
-    // Handling Sign Up logic
-    const handleSignup = async (credentials) => {
-        // e.preventDefault();
+    const login = async (credentials) => {
         try {
-            const signupURL = `${backendUrl}/signup`;
-
-            const response = await fetch(signupURL, {
-                method: "POST", 
-                headers: {
-                    'Content-Type': 'application/json'
-                }, 
-                body: JSON.stringify(credentials)
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                console.log(`OTP Verification pending for user ${credentials.username}`);
-                navigate('/verify-otp');
-                toast.success(data.message);
-            } else {
-                toast.error(message);
-            }
-            
+            const { data } = await api.post("/login", credentials);
+            setToken(data.accessToken);
+            setUserStorage(data.user);
+            setUser(data.user);
+            toast.success(data.message);
+            navigate("/");
         } catch (error) {
-            console.log(error.message);
-            toast.error(data.message);
-        }
-    } 
-
-    // Handling Login logic
-    const handleLogin = async (credentials) => {
-        //e.preventDefault();
-        try {
-            const loginUrl = `${backendUrl}/login`;
-
-            const response = await fetch(loginUrl, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(credentials)
-            });
-            const data = await response.json();
-            const user = data.user;
-            if (response.ok) {
-                localStorage.setItem('accessToken', data.accessToken);
-                setUser(data.accessToken);
-                navigate("/");
-                toast.success(data.message);
-            } else {
-                toast.error(data.message);
-                console.log(data.message || "Authentication failed!")
-            }
-        } catch (error) {
-            toast.error(data.message);
-            console.log(error);
+            toast.error(
+                error.response?.data?.message ||
+                "Login failed"
+            );
         }
     };
 
-    const value = {
+    const signup = async (credentials) => {
+        try {
+            const { data } = await api.post("/signup", credentials);
+            setEmail(credentials.email);
+            toast.success(data.message);
+            navigate("/verify-otp");
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message ||
+                "Signup failed"
+            );
+        }
+    };
+
+    const logout = () => {
+        removeToken();
+        setUser(null);
+        toast.success("Logged out");
+        navigate("/login");
+
+    };
+
+    const value = useMemo(() => ({
         user,
-        setUser, 
-        email, 
-        setEmail, 
-        handleSignup, 
-        handleLogin        
-    }
+        email,
+        setEmail,
+        login,
+        signup,
+        logout, 
+    }), [user, email]);
 
     return (
         <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+
+};

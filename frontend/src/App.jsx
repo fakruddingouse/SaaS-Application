@@ -6,11 +6,11 @@ import HomePage from './pages/HomePage';
 import LoginAndSignup from './pages/LoginAndSignup'
 import VerifyOTP from './pages/VerifyOTP';
 
-import { AuthContext } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
 
 const App = () => {
 
-	const { user, setUser, email, setEmail, otp, setOtp } = useContext(AuthContext);
+	const { user, setUser, email, setEmail } = useAuth();
 
 	return (
 		<div>

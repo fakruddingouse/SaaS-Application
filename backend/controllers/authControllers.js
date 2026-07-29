@@ -206,9 +206,9 @@ const login = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
-                message: "Invalid email or password!"
+                message: "User not found!"
             });
         }
 
