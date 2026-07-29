@@ -1,8 +1,8 @@
 import { createContext, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { replace, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../api/axios";
-import { getUser, setUserStorage, getToken, setToken, removeToken } from "../utils/token";
+import { getUser, removeUser, setUserStorage, getToken, setToken, removeToken } from "../utils/token";
 
 export const AuthContext = createContext();
 
@@ -17,10 +17,10 @@ export const AuthProvider = ({ children }) => {
         try {
             const { data } = await api.post("/login", credentials);
             setToken(data.accessToken);
-            setUserStorage(data.user);
-            setUser(data.user);
+            setUserStorage(data.user);  // (func) set user in localstorage 
+            setUser(data.user); // state
             toast.success(data.message);
-            navigate("/");
+            navigate("/", { replace: true });
         } catch (error) {
             toast.error(
                 error.response?.data?.message ||
@@ -43,12 +43,45 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = () => {
-        removeToken();
-        setUser(null);
-        toast.success("Logged out");
-        navigate("/login");
+    const logout = async () => {
+        try {
+            await api.post("/logout");
+        } catch (error) {
+            console.error("Backend logout failed or was already cleared:");
+        } finally {
+            removeToken();
+            removeUser();
+            setUser(null);
+            toast.success("Logged out successfully.")
+            navigate("/login");
+        }
+    }
 
+    const requestForgotPassword = async (userEmail) => {
+        try {
+            const { data } = await api.post("/forgot-password-request", { email: userEmail });
+            setEmail(userEmail); 
+            toast.success(data.message);
+            navigate("/forgot-password-verify");
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message || 
+                "Failed to send reset OTP"
+            );
+        }
+    };
+
+    const verifyForgotPassword = async (payload) => {
+        try {
+            const { data } = await api.post("/forgot-password-verify", payload);
+            toast.success(data.message);
+            navigate("/login");
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message || 
+                "Password reset failed"
+            );
+        }
     };
 
     const value = useMemo(() => ({
@@ -58,6 +91,8 @@ export const AuthProvider = ({ children }) => {
         login,
         signup,
         logout, 
+        requestForgotPassword, 
+        verifyForgotPassword
     }), [user, email]);
 
     return (

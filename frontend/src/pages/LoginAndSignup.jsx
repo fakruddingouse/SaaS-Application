@@ -1,8 +1,13 @@
 import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth.js";
+import { Navigate, useNavigate } from "react-router-dom";
+
+import ForgotPasswordVerify from "./ForgotPasswordVerify.jsx";
 
 function LoginAndSignup({ user, setUser }) {
+
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const [ state, setState ] = useState("Login");
   const [ username, setUsername ] = useState("");
@@ -11,7 +16,13 @@ function LoginAndSignup({ user, setUser }) {
   const [ password, setPassword ] = useState("");
   const [ loading, setLoading ] = useState(false);
 
-  const { signup, login } = useAuth();
+  const { signup, login, requestForgotPassword  } = useAuth();
+  const navigate = useNavigate();
+
+  const handleForgotPasswordRequest = async (e) => {
+    e.preventDefault();
+    await requestForgotPassword(email);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -102,6 +113,20 @@ function LoginAndSignup({ user, setUser }) {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
+          
+          {/* Forgot password */}
+          {state !== 'Sign Up' && 
+            <p>
+              Forgot Password?{" "}
+              <button
+                type="button"
+                onClick={handleForgotPasswordRequest}
+                className="text-blue-600 cursor-pointer hover:underline font-semibold"
+              >
+                Click Here
+              </button>
+            </p>
+          }
 
           <button
             type="submit"
@@ -113,7 +138,7 @@ function LoginAndSignup({ user, setUser }) {
 
         </form>
 
-        <div className="mt-6 text-center text-gray-600">
+        <div className="mt-6 text-center cursor-pointer text-gray-600">
           {state === "Login" ? (
             <p>
               Don't have an account?{" "}

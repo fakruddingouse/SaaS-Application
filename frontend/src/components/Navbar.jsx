@@ -1,8 +1,16 @@
 import React from 'react'
 import Button from './Button'
 import capitalizeFirstLetter from '../utils/utils.js'
+import { useAuth } from '../hooks/useAuth.js'
 
 const Navbar = ({ user }) => {
+
+    const { logout } = useAuth();
+
+    const handleLogout = async (e) => {
+        await logout();
+    }
+
   return (
     <div className='flex justify-between p-2 bg-slate-100'>
         <div className='m-2'>
@@ -23,6 +31,7 @@ const Navbar = ({ user }) => {
                 <Button name="Services" />
                 <Button name="Blog" />
                 <Button name="Contact" />
+                <Button name="Logout" onClick={handleLogout} />
             </div>
         }
     </div>

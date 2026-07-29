@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { generateAccessToken, generateRefreshToken } from "../config/generateToken.js";
-import { sendOTP } from "../services/emailService.js";
+import { sendOTP, forgotPasswordOTP } from "../services/emailService.js";
 
 /**
  * @Name signup 
@@ -125,6 +125,111 @@ const verifyOTP = async (req, res) => {
             success: true, 
             message: "Email verified successfully!"
         }) 
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+/**
+ * @POST Route
+ * @requestForgotPassword controller
+ * @description requesting to reset password
+ */
+
+const requestForgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ success: false, message: "Email is required!" });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found!" });
+        }
+
+        const otp = crypto.randomInt(100000, 999999).toString();
+
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+        user.otp = otp;
+        user.otpExpires = otpExpires;
+        await user.save();
+
+        await forgotPasswordOTP(user.email, otp);
+
+        return res.status(200).json({
+            success: true,
+            message: "OTP sent to your email successfully!"
+        });
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * @POST Route
+ * @forgotPassword controller
+ * @description resets password
+ */
+const forgotPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Email, OTP and new password are required!"
+            });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                success: false, 
+                message: "User not found!"
+            })
+        } 
+
+        if (!user.otp || !user.otpExpires) {
+            return res.status(400).json({
+                success: false, 
+                message: "No OTP found. Please request a new one."
+            })
+        } 
+
+        if (user.otpExpires <= new Date()) {
+            return res.status(400).json({
+                success: false, 
+                message: "OTP has expired!"
+            });
+        }
+        
+        if (user.otp !== otp) {
+            return res.status(400).json({
+                success: false, 
+                message: "Invalid OTP!"
+            })
+        }
+
+        user.isVerified = true;
+        user.otp = null;
+        user.otpExpires = null;
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPwd = await bcrypt.hash(newPassword, salt);
+        user.password = hashedPwd;
+
+        await user.save();
+
+        return res.status(200).json({
+            success: true, 
+            message: "Password changed successfully!"
+        })
+
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -353,7 +458,9 @@ const authController = {
     resendOTP, 
     login, 
     refreshAccessToken, 
-    logout
+    logout, 
+    requestForgotPassword, 
+    forgotPassword
 };
 
 export default authController;
