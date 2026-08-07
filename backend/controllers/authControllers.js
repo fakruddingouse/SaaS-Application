@@ -10,7 +10,6 @@ import { sendOTP, forgotPasswordOTP } from "../services/emailService.js";
  * @Description signup a new user, gets OTP
  * @Post Route
  */
-
 const signup = async (req, res) => {
     try {
         const { username, phone, email, password } = req.body;
@@ -138,7 +137,6 @@ const verifyOTP = async (req, res) => {
  * @requestForgotPassword controller
  * @description requesting to reset password
  */
-
 const requestForgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
@@ -237,60 +235,6 @@ const forgotPassword = async (req, res) => {
         });
     }
 }
-
-
-/**
- * @Name resendOTP
- * @Description resends otp if the previous one expires
- * @Post Route
- */
-const resendOTP = async (req, res) => {
-    try {
-        const { email } = req.body;
-        if (!email) {
-            return res.status(404).json({
-                success: false, 
-                message: "Email is required!"
-            })
-        }
-        
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({
-                success: false, 
-                message: "User not found!"
-            })
-        }
-
-        if (user.isVerified) {
-            return res.status(400).json({
-                success: false, 
-                message: "Email is already verified!"
-            })
-        }
-
-        const newOtp = crypto.randomInt(10000, 1000000).toString();
-        const newOtpExpires = new Date(Date.now() + 10 * 60 * 1000);
-
-        user.otp = newOtp;
-        user.otpExpires = newOtpExpires;
-
-        await user.save({ validationBeforeSave: false });
-        await sendOTP(user.email, newOtp);
-
-        return res.status(200).json({
-            success: true, 
-            message: "OTP resent successfully!"
-        })
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false, 
-            message: error.message
-        })
-    }
-}
-
 
 /**
  * @POST Route
@@ -455,7 +399,6 @@ const logout = async (req, res) => {
 const authController = {
     signup, 
     verifyOTP, 
-    resendOTP, 
     login, 
     refreshAccessToken, 
     logout, 

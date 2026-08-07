@@ -19,7 +19,8 @@ const App = () => {
     <div>
       <Toaster />
       <Routes>
-        <Route path='/' element={user ? <HomePage user={user} setUser={setUser} /> : <Navigate to="/login" replace />} />
+        {/* <Route path='/' element={user ? <HomePage user={user} setUser={setUser} /> : <Navigate to="/login" replace />} /> */}
+        <Route path='/' element={<HomePage user={user} setUser={setUser} />} />
 
         <Route path='/login' element={
           <RequireGuest user={user}>
