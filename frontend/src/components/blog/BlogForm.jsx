@@ -1,4 +1,7 @@
 import { useState } from "react";
+import axios from "axios";
+import api from "../../api/axios.js"
+import { generateBlog } from "../../api/aiApi.js";
 
 const BlogForm = ({ setBlog, loading, setLoading }) => {
   const [topic, setTopic] = useState("");
@@ -6,7 +9,7 @@ const BlogForm = ({ setBlog, loading, setLoading }) => {
   const [length, setLength] = useState("Medium");
   const [keywords, setKeywords] = useState("");
 
-  const handleGenerate = async (e) => {
+  /* const handleGenerate = async (e) => {
     e.preventDefault();
 
     if (!topic.trim()) {
@@ -22,6 +25,16 @@ const BlogForm = ({ setBlog, loading, setLoading }) => {
       length,
       keywords,
     });
+
+    const response = await axios.post(
+        "http://localhost:4000/api/ai/blog",
+        {
+            topic,
+            tone,
+            length,
+            keywords,
+        }
+    );
 
     setLoading(true);
 
@@ -43,6 +56,36 @@ const BlogForm = ({ setBlog, loading, setLoading }) => {
 
       setLoading(false);
     }, 2000);
+  }; */
+
+  const handleGenerate = async (e) => {
+    e.preventDefault();
+    
+    if (!topic.trim()) {
+      alert("Please enter a topic.");
+      return;
+    }
+    try {
+      setLoading(true);
+      setBlog("");
+
+      const response = await generateBlog({
+        topic, tone, length, keywords
+      })
+      console.log("Backend response: ", response);
+
+      setBlog(response.blog.content);
+
+    } catch (error) {
+      console.error("Blog generation error:", error);
+
+      alert(
+          error.response?.data?.message ||
+          "Failed to generate blog."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

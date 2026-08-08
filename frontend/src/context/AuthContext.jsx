@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (credentials) => {
         try {
-            const { data } = await api.post("/login", credentials);
+            const { data } = await api.post("/auth/login", credentials);
             setToken(data.accessToken);
             setUserStorage(data.user);  // (func) set user in localstorage 
             setUser(data.user); // state
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (credentials) => {
         try {
-            const { data } = await api.post("/signup", credentials);
+            const { data } = await api.post("/auth/signup", credentials);
             setEmail(credentials.email);
             toast.success(data.message);
             navigate("/verify-otp");
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await api.post("/logout");
+            await api.post("/auth/logout");
         } catch (error) {
             console.error("Backend logout failed or was already cleared:");
         } finally {
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
 
     const requestForgotPassword = async (userEmail) => {
         try {
-            const { data } = await api.post("/forgot-password-request", { email: userEmail });
+            const { data } = await api.post("/auth/forgot-password-request", { email: userEmail });
             setEmail(userEmail); 
             toast.success(data.message);
             navigate("/forgot-password-verify");
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
 
     const verifyForgotPassword = async (payload) => {
         try {
-            const { data } = await api.post("/forgot-password-verify", payload);
+            const { data } = await api.post("/auth/forgot-password-verify", payload);
             toast.success(data.message);
             navigate("/login");
         } catch (error) {

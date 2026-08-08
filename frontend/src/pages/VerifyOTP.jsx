@@ -14,7 +14,7 @@ const VerifyOTP = ({ email, setEmail }) => {
         e.preventDefault();
         try {
             let payload = { email, otp };
-            const response = await fetch(`${backendURL}/verify-otp`, {
+            const response = await fetch(`${backendURL}/auth/verify-otp`, {
                 method: "POST", 
                 headers: {
                 'Content-Type': 'application/json'

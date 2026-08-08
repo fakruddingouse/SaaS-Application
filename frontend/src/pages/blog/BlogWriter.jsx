@@ -21,18 +21,20 @@ const BlogWriter = ({ user }) => {
             Generate SEO-friendly articles in seconds.
           </p>
         </div>
+        <div>
+          <div className="mt-12">
+            <BlogForm
+              setBlog={setBlog}
+              loading={loading}
+              setLoading={setLoading}
+            />
+          </div>
 
-        <div className="mt-12">
-          <BlogForm
-            setBlog={setBlog}
-            loading={loading}
-            setLoading={setLoading}
-          />
+          <div className="mt-12">
+            <BlogOutput blog={blog} loading={loading} />
+          </div>
         </div>
 
-        <div className="mt-12">
-          <BlogOutput blog={blog} loading={loading} />
-        </div>
       </div>
     </div>
   );

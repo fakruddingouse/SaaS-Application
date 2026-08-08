@@ -5,7 +5,7 @@ import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/authRoutes.js';
-import blogRoutes from './routes/blogRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
 dotenv.config();
 
@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
   res.send("Hello Everyone!");
 })
 app.use("/api/auth", authRoutes);
-app.use("/api/ai/blog", blogRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`)

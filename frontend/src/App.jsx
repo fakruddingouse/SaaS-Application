@@ -9,6 +9,8 @@ import ForgotPasswordVerify from './pages/ForgotPasswordVerify';
 import RequireEmail from './components/RequireEmail';
 import RequireGuest from './components/RequireGuest';
 
+import BlogWriter from './pages/blog/BlogWriter';
+
 import { useAuth } from './hooks/useAuth';
 
 const App = () => {
@@ -38,6 +40,10 @@ const App = () => {
           <RequireEmail email={email}>
             <ForgotPasswordVerify email={email} setEmail={setEmail} />
           </RequireEmail>
+        } />
+
+        <Route path='/blog-writer' element={
+            <BlogWriter user={user} /> 
         } />
 
       </Routes>

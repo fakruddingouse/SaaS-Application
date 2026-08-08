@@ -42,9 +42,34 @@ const createBlog = async (req, res) => {
     }
 }
 
+/**
+ * @GET Request
+ * @ Retrieve all blogs
+ */
+const getAllBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find({ user: req.user.id }).sort({ date: -1 });
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully fetched all blogs",
+      count: blogs.length,
+      data: blogs
+    });
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong"
+    });
+  }
+};
+
 
 const aiController = {
-    createBlog
+    createBlog, 
+    getAllBlogs
 }
 
 export default aiController
