@@ -10,6 +10,7 @@ import RequireEmail from './components/RequireEmail';
 import RequireGuest from './components/RequireGuest';
 
 import BlogWriter from './pages/blog/BlogWriter';
+import ResumeReviewer from './pages/resume/ResumeReviewer';
 
 import { useAuth } from './hooks/useAuth';
 
@@ -44,6 +45,10 @@ const App = () => {
 
         <Route path='/blog-writer' element={
             <BlogWriter user={user} /> 
+        } />
+
+        <Route path='/resume-reviewer' element={
+          <ResumeReviewer user={user} />
         } />
 
       </Routes>

@@ -42,9 +42,13 @@ const BlogForm = ({ setBlog, loading, setLoading, setRefreshBlogs }) => {
       console.error("Blog generation error:", error);
 
       toast.error(
-        error.response?.data?.message ||
+        "You have to login first!" ||
         "Failed to generate blog."
       );
+      /* toast.error(
+        error.response?.data?.message ||
+        "Failed to generate blog."
+      ); */
 
     } finally {
       setLoading(false);
