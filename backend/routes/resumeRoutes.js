@@ -9,6 +9,6 @@ const upload = multer({
     storage: multer.memoryStorage()
 });
 
-router.post("/upload-resume", authMiddleware, upload.single("file"), resumeController.generateText);
+router.post("/upload-resume", authMiddleware, upload.single('resume'), resumeController.generateText);
 
 export default router;

@@ -5,7 +5,7 @@ const authMiddleware = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
 
-        console.log("AUTH HEADER:", authHeader);
+        //console.log("AUTH HEADER:", authHeader);
 
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return res.status(401).json({
@@ -16,19 +16,19 @@ const authMiddleware = async (req, res, next) => {
 
         const token = authHeader.split(" ")[1];
 
-        console.log("TOKEN RECEIVED:", !!token);
+        //console.log("TOKEN RECEIVED:", !!token);
 
         const decoded = jwt.verify(
             token,
             process.env.ACCESS_SECRET
         );
 
-        console.log("DECODED TOKEN:", decoded);
+        //console.log("DECODED TOKEN:", decoded);
 
         const user = await User.findById(decoded.id)
             .select("-password -refreshToken");
 
-        console.log("USER FOUND:", !!user);
+        //console.log("USER FOUND:", !!user);
 
         if (!user) {
             return res.status(401).json({
@@ -43,8 +43,8 @@ const authMiddleware = async (req, res, next) => {
 
     } catch (error) {
 
-        console.error("AUTH ERROR NAME:", error.name);
-        console.error("AUTH ERROR MESSAGE:", error.message);
+        //console.error("AUTH ERROR NAME:", error.name);
+        //console.error("AUTH ERROR MESSAGE:", error.message);
 
         return res.status(401).json({
             success: false,
