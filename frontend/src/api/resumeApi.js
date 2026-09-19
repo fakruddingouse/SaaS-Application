@@ -1,6 +1,6 @@
 import api from "./axios";
 
-export const generateText = async (file) => {
+export const uploadPdf = async (file) => {
   const formData = new FormData();
 
   formData.append("resume", file);
