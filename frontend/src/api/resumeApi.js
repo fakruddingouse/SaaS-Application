@@ -1,16 +1,21 @@
 import api from "./axios";
 
-export const uploadPdf = async (file) => {
+export const uploadResume = async (file) => {
   const formData = new FormData();
-
   formData.append("resume", file);
 
-  return await api.post(
-    "/resume/upload-resume",
-    formData
-  );
-  /* return await api.post(
-    `${backendURL}/resume/upload-resume`,
-    formData
-  ); */
+  const response = await api.post("/resume/upload-resume", formData);
+
+  return response.data;
 };
+
+
+export const getResumes = async () => {
+  const response = await api.get("/resume/resumes");
+  return response.data;
+}
+
+export const deleteResume = async (resumeId) => {
+  const response = await api.delete(`/resume/delete-resume/${resumeId}`);
+  return response.data;
+}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-import LoadingAnimation from "./LoadingAnimation";
+import LoadingAnimation from "../LoadingAnimation";
 import { deleteBlog } from "../../api/aiApi";
 
 const BlogOutput = ({ blog, loading, setBlog, setRefreshBlogs }) => {
@@ -57,7 +57,7 @@ const BlogOutput = ({ blog, loading, setBlog, setRefreshBlogs }) => {
 
   // Loading
   if (loading) {
-    return <LoadingAnimation />;
+    return <LoadingAnimation message="Gemini is writing your article..." />;
   }
 
   // No blog selected/generated

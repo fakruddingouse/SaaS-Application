@@ -1,21 +1,20 @@
-import React, { useState } from 'react';
-import { uploadPdf } from '../../api/resumeApi';
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { uploadResume } from "../../api/resumeApi";
 
-const ResumeForm = () => {
+const ResumeForm = ({ setResume, loading, setLoading, setRefreshResumes }) => {
 
   const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
 
     if (selectedFile.type !== "application/pdf") {
-      setStatus({ type: 'error', message: "Please select a PDF file."});
+      toast.error("Please select a PDF file.");
       return;
     }
-    setStatus(null);
+
     setFile(selectedFile);
   };
 
@@ -23,55 +22,69 @@ const ResumeForm = () => {
     e.preventDefault();
 
     if (!file) {
-      setStatus({ type: 'error', message: "Please select a file first."});
+      toast.error("Please select a file first.");
       return;
     }
-    setLoading(true);
-    setStatus(null);
 
     try {
-      const response = await uploadPdf(file);
-      setStatus({ type: 'success', message: "Resume uploaded successfully."});
-      console.log("Success: ", response.data);
-    } catch (err) {
-      const message = err.message?.data?.message || "Upload failed. Please try again.";
-      setStatus({ type: 'error', message });
-      console.error("Upload error:", err);
+      setLoading(true);
+      setResume(null);
+
+      const response = await uploadResume(file);
+
+      setResume(response.resume);
+      setRefreshResumes(prev => prev + 1);
+      toast.success("Resume reviewed successfully!");
+
+    } catch (error) {
+      console.error("Upload error:", error);
+
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to review resume."
+      );
+
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <div>
-      <form onSubmit={handleUpload}>
-        <h2 className='text-lg'>Upload Resume</h2>
-        <br />
+    <form
+      onSubmit={handleUpload}
+      className="bg-white rounded-3xl shadow-lg p-8 space-y-7"
+    >
+
+      <div>
+        <label className="font-semibold text-gray-700">
+          Upload Resume (PDF)
+        </label>
+
         <input
-          className='border-2 w-auto cursor-pointer'
           type="file"
           accept="application/pdf"
           name="resume"
           onChange={handleFileChange}
-          disabled={loading}
+          className="w-full mt-2 border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 file:font-semibold hover:file:bg-blue-100"
         />
 
-        <button
-          className='bg-blue-400 px-2 mx-2 border rounded-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? 'Uploading...' : 'Upload'}
-        </button>
-
-        {status && (
-          <p className={status.type === 'error' ? 'text-red-500 mt-2' : 'text-green-600 mt-2'}>
-            {status.message}
+        {file && (
+          <p className="mt-2 text-sm text-gray-500">
+            Selected: {file.name}
           </p>
         )}
-      </form>
-    </div>
-  )
-}
+      </div>
 
-export default ResumeForm
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:scale-[1.02] transition duration-300 disabled:opacity-60 cursor-pointer"
+      >
+        {loading ? "Analyzing..." : "✨ Review Resume"}
+      </button>
+
+    </form>
+  );
+};
+
+export default ResumeForm;
