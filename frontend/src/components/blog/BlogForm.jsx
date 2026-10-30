@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { generateBlog } from "../../api/aiApi.js";
+import { generateBlog } from "../../api/blogApi.js";
 
 const BlogForm = ({ setBlog, loading, setLoading, setRefreshBlogs }) => {
 

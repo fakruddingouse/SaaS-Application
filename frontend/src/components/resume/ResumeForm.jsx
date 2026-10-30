@@ -37,7 +37,8 @@ const ResumeForm = ({ setResume, loading, setLoading, setRefreshResumes }) => {
       toast.success("Resume reviewed successfully!");
 
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error("File Upload Error:", error);
+      console.error(error.message)
 
       toast.error(
         error.response?.data?.message ||
@@ -45,7 +46,7 @@ const ResumeForm = ({ setResume, loading, setLoading, setRefreshResumes }) => {
       );
 
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
@@ -64,7 +65,7 @@ const ResumeForm = ({ setResume, loading, setLoading, setRefreshResumes }) => {
           type="file"
           accept="application/pdf"
           name="resume"
-          onChange={handleFileChange}
+          onChange={handleFileChange} 
           className="w-full mt-2 border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 file:font-semibold hover:file:bg-blue-100"
         />
 
@@ -73,16 +74,15 @@ const ResumeForm = ({ setResume, loading, setLoading, setRefreshResumes }) => {
             Selected: {file.name}
           </p>
         )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:scale-[1.02] transition duration-300 disabled:opacity-60 cursor-pointer"
+        >
+          {loading ? "Analyzing..." : "✨ Review Resume"}
+        </button>
       </div>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:scale-[1.02] transition duration-300 disabled:opacity-60 cursor-pointer"
-      >
-        {loading ? "Analyzing..." : "✨ Review Resume"}
-      </button>
-
     </form>
   );
 };

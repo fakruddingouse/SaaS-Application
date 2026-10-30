@@ -5,10 +5,8 @@ export const uploadResume = async (file) => {
   formData.append("resume", file);
 
   const response = await api.post("/resume/upload-resume", formData);
-
   return response.data;
 };
-
 
 export const getResumes = async () => {
   const response = await api.get("/resume/resumes");

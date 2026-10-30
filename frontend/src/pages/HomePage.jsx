@@ -21,7 +21,7 @@ const FEATURES = [
     id: "image",
     name: "Image Studio",
     desc: "Upload or describe an image for AI analysis.",
-    path: "/image-studio",
+    path: "/image-describer",
     emoji: "🖼️",
   },
   {

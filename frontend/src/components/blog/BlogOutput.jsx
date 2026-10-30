@@ -2,7 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 import LoadingAnimation from "../LoadingAnimation";
-import { deleteBlog } from "../../api/aiApi";
+import { deleteBlog } from "../../api/blogApi";
 
 const BlogOutput = ({ blog, loading, setBlog, setRefreshBlogs }) => {
 

@@ -56,20 +56,7 @@ const ResumeHistory = ({ setLoading, refreshResumes, setResume }) => {
               key={resume._id}
               onClick={() => onSelectResume(resume)}
               className="
-                w-full
-                text-left
-                p-4
-                rounded-xl
-                border
-                border-gray-200
-                bg-white
-                hover:bg-blue-50
-                hover:border-blue-300
-                hover:shadow-sm
-                transition
-                duration-200
-                cursor-pointer
-              "
+                w-full text-left p-4 rounded-xl border border-gray-200 bg-white hover:bg-blue-50 hover:border-blue-300 hover:shadow-sm transition duration-200 cursor-pointer"
             >
               <div className="flex justify-between items-start gap-2">
                 <h3 className="font-semibold text-gray-800 truncate">

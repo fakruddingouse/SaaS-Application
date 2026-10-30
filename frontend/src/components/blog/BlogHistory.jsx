@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-import { getBlogs } from "../../api/aiApi";
+import { getBlogs } from "../../api/blogApi";
 
 const BlogHistory = ({ setLoading,  refreshBlogs, setBlog }) => {
 

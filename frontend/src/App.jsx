@@ -1,4 +1,3 @@
-import React from 'react'
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
 
@@ -11,6 +10,7 @@ import RequireGuest from './components/RequireGuest';
 
 import BlogWriter from './pages/blog/BlogWriter';
 import ResumeReviewer from './pages/resume/ResumeReviewer';
+import ImageDescriber from './pages/image/ImageDescriber';
 
 import { useAuth } from './hooks/useAuth';
 
@@ -44,11 +44,15 @@ const App = () => {
         } />
 
         <Route path='/blog-writer' element={
-            <BlogWriter user={user} /> 
+          <BlogWriter user={user} /> 
         } />
 
         <Route path='/resume-reviewer' element={
           <ResumeReviewer user={user} />
+        } />
+
+        <Route path="/image-describer" element={
+          <ImageDescriber user={user} />
         } />
 
       </Routes>
